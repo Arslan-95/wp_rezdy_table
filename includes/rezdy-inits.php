@@ -7,7 +7,7 @@ function rezdy_response_data(){
     $apiKey = get_option('rezdy_apiKey');
 
     $body = ['orderStatus=CONFIRMED'];
-    $headers = ["apiKey: $apiKey"];  
+    $headers = ["apiKey: $apiKey"];
     
     echo getRequestData("https://api.rezdy.com/v1/bookings", $headers, $body);
     exit();
@@ -37,6 +37,7 @@ function editDriverOrManagerName(){
   $savedList = get_option('rezdy_names');
 
   $savedList[$id] = [
+    'orderNumber' => $id,
     'driver' => $driver,
     'manager' => $manager
   ];

@@ -1,27 +1,14 @@
 <?php
-include_once( __DIR__ . '/rezdy-inits.php' );
-
-add_shortcode( 'rezdy_display', 'rezdy_display' );
-
-function rezdy_display(){
-  $rezdyNames = json_encode(get_option('rezdy_names'));
-  ?>
+function rezdy_submenu_page() {
+  $rezdyNames = get_option('rezdy_names');
+	?>
     <style>
       .rezdy input[name="rezdy_date"] {
-          opacity: 1;
-          border: none;
-          padding: 5px;
-          background-color: rgb(238, 237, 237);
-          border-radius: 2px;
-      }
-
-      body {
-          width: 100%;
-          margin: 0;
-          padding: 0;
-          padding: 20px 20px;
-          box-sizing: border-box;
-          justify-content: center;
+        opacity: 1;
+        border: none;
+        padding: 5px;
+        background-color: rgb(238, 237, 237);
+        border-radius: 2px;
       }
 
       .rezdy {
@@ -30,7 +17,7 @@ function rezdy_display(){
         display: flex;
         flex-direction: column;
         /* justify-content: center; */
-        align-items: center;
+        align-items: start;
         font-family: Arial, Helvetica, sans-serif;
       }
 
@@ -44,61 +31,58 @@ function rezdy_display(){
           font-weight: 600;
           cursor: pointer;
       }
-      .rezdy table {
-          width: 100%;
-          border-collapse: collapse;
+      
+      table {
+        border-collapse: collapse;
       }
 
       
-      .rezdy tr:nth-of-type(odd) {
-          background: #eee;
+      tr:nth-of-type(odd) {
+        background: #eee;
       }
 
-      .rezdy th {
-          background: rgb(238, 238, 238);
-          color: rgb(46, 46, 46);
-          font-weight: bold;
+      th {
+        background: rgb(238, 238, 238);
+        color: rgb(46, 46, 46);
+        font-weight: bold;
       }
 
-      .rezdy td,
-      .rezdy th {
-          padding: 6px;
-          border: 1px solid rgb(129, 129, 129);
-          text-align: left;
+      td,
+      th {
+        padding: 6px;
+        border: 1px solid rgb(129, 129, 129);
+        text-align: left;
       }
-
-      .rezdy__header{
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-        margin-right: auto;
+      
+      button{
+        cursor: pointer;
       }
       
       @media only screen and (max-width: 760px),
       (min-device-width: 768px) and (max-device-width: 1024px) {
 
           /* Force table to not be like tables anymore */
-          .rezdy table,
-          .rezdy thead,
-          .rezdy tbody,
-          .rezdy th,
-          .rezdy td,
-          .rezdy tr {
+          table,
+          thead,
+          tbody,
+          th,
+          td,
+          tr {
               display: block;
           }
 
           
-          .rezdy thead tr {
+          thead tr {
               position: absolute;
               top: -9999px;
               left: -9999px;
           }
 
-          .rezdy tr {
+          tr {
               border: 1px solid #ccc;
           }
 
-          .rezdy td {
+          td {
               
               border: none;
               width: 100%;
@@ -108,7 +92,7 @@ function rezdy_display(){
               box-sizing: border-box;
           }
 
-          .rezdy td:before {
+          td:before {
               
               top: 6px;
               left: 6px;
@@ -119,63 +103,99 @@ function rezdy_display(){
           }
 
         
-          .rezdy td:nth-of-type(1):before {
-              content: "Customer Full Name";
+          td:nth-of-type(1):before {
+              content: "OrderNumber";
           }
 
-          .rezdy td:nth-of-type(2):before {
-              content: "Customer Phone";
+          td:nth-of-type(2):before {
+              content: "Driver";
           }
 
-          .rezdy td:nth-of-type(3):before {
-              content: "Order Special Requirements";
-          }
-          .rezdy td:nth-of-type(4):before {
-              content: "Product";
-          }
-          .rezdy td:nth-of-type(5):before {
-              content: "Session";
-          }
-          .rezdy td:nth-of-type(6):before {
-              content: "Quantities";
-          }
-          .rezdy td:nth-of-type(7):before {
-              content: "DRIVER NAME";
-          }
-          .rezdy td:nth-of-type(8):before {
-              content: "MANAGER NAME";
+          td:nth-of-type(3):before {
+              content: "Manager";
           }
       }
     </style>
-      <div class="rezdy">
-        <div class="rezdy__header">
-          <span id="rezdy_date_button">Today</span>
-          <form>
-              <input type="date" id="rezdy_date" name="rezdy_date" value="">
-          </form>
-        </div>
-        <table class="rezdy-table">
-            <thead class="rezdy-table__header">
-                <tr>
-                    <th>Customer Full Name</th>
-                    <th>Customer Phone</th>
-                    <th>Order Special Requirements</th>
-                    <th>Product</th>
-                    <th>Session</th>
-                    <th>Quantities</th>
-                    <th>DRIVER NAME</th>
-                    <th>MANAGER NAME</th>
-                </tr>
-            </thead>
-            <tbody class="rezdy-table__body">
-            </tbody>
-        </table>
+    <h1><?php echo get_admin_page_title(); ?></h1>
+    <form action="/" id="rezdy_names_changer">
+      <input type="text" name="rezdy_id" placeholder="rezdy id">
+      <input type="text" name="driver_name" placeholder="driver name">
+      <input type="text" name="manager_name" placeholder="manager name">
+      <?php submit_button(); ?>
+    </form>
+
+    <table>
+      <thead>
+        <th>OrderNumber</th>
+        <th>Driver</th>
+        <th>Manager</th>
+      </thead>
+      <tbody>
+        <?php foreach($rezdyNames as $element): ?>
+          <tr>
+            <td><?php echo $element['orderNumber']; ?></td>
+            <td><?php echo $element['driver']; ?></td>
+            <td><?php echo $element['manager']; ?></td>
+          </tr>
+        <?php endforeach ?>
+      </tbody>
+    </table>
+
+    <h2>Current Billings</h2>
+
+    <button style="margin-bottom: 20px" id="load_table">Load</button>
+    <span id="rezdy_loading" style="display: none;">loading...</span>
+
+    <div class="rezdy">
+      <div class="rezdy__header">
+        <span id="rezdy_date_button">Today</span>
+        <form>
+            <input type="date" id="rezdy_date" name="rezdy_date" value="">
+        </form>
+      </div>
+      <table class="rezdy-table">
+          <thead class="rezdy-table__header">
+              <tr>
+                  <th>Customer Full Name</th>
+                  <th>Customer Phone</th>
+                  <th>Order Special Requirements</th>
+                  <th>Product</th>
+                  <th>Session</th>
+                  <th>Quantities</th>
+                  <th>DRIVER NAME</th>
+                  <th>MANAGER NAME</th>
+              </tr>
+          </thead>
+          <tbody class="rezdy-table__body">
+          </tbody>
+      </table>
     </div>
+
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
+      const forms = [
+        document.getElementById('rezdy_names_changer')
+      ];
+      
+      forms.map(element => element.addEventListener('submit', event => formListener(event)));
+
+      function formListener(event){
+        event.preventDefault();
+        
+        const formData = new FormData(event.currentTarget);
+
+        fetch('/wp-admin/admin.php', {
+          method: 'post',
+          body: formData
+        })
+        .then(response => alert(response.statusText));
+      }
+
+      document.getElementById('load_table').addEventListener('click', event => {
+        document.getElementById('rezdy_loading').style.display = 'inline';
+
         const todayButton = document.getElementById('rezdy_date_button');
         const calendar = document.getElementById('rezdy_date');
-        const rezdyNames = <?php echo $rezdyNames; ?>;
+        const rezdyNames = <?php echo json_encode($rezdyNames); ?>;
 
         console.log('start...');
         
@@ -254,5 +274,5 @@ function rezdy_display(){
         }
       });
     </script>
-  <?php
+  <?
 }
