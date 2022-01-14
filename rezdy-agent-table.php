@@ -12,7 +12,7 @@ function rezdy_agent_table_activate(){
   add_option('rezdy_names', []);
 }
 
-register_deactivation_hook( __FILE__, 'rezdy_agent_table_activate' );
+register_deactivation_hook( __FILE__, 'rezdy_agent_table_deactivate' );
 
 function rezdy_agent_table_deactivate(){
   delete_option('rezdy_apiKey');

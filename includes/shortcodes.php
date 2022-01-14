@@ -4,6 +4,7 @@ include_once( __DIR__ . '/rezdy-inits.php' );
 add_shortcode( 'rezdy_display', 'rezdy_display' );
 
 function rezdy_display(){
+  $rezdyNames = json_encode(get_option('rezdy_names'));
   ?>
     <style>
       .rezdy input[name="rezdy_date"] {
@@ -171,14 +172,15 @@ function rezdy_display(){
         </table>
     </div>
     <script>
-      document.addEventListener('DOMContentLoaded', () => { 
+      document.addEventListener('DOMContentLoaded', () => {
         const todayButton = document.getElementById('rezdy_date_button');
         const calendar = document.getElementById('rezdy_date');
+        const rezdyNames = <?php echo $rezdyNames; ?>;
 
         console.log('start...');
         
         setTodayValue(calendar);
-        getRezdyData();
+        // getRezdyData();
 
         async function getRezdyData(){
           const response = fetch('/get?rezdy_get_data', {
@@ -192,7 +194,7 @@ function rezdy_display(){
 
           let data = await response;
           let date = new Date(calendar.value).toLocaleDateString();
-          console.log('end...')
+          console.log('end...');
           showDataInTable(data, date);
           
           calendar.addEventListener('input', (event) => {
@@ -204,7 +206,7 @@ function rezdy_display(){
             const date = setTodayValue(calendar);
                                     
             showDataInTable(data, date);
-          })
+          });
         }
         
         function showDataInTable(data, date){
@@ -215,6 +217,9 @@ function rezdy_display(){
             const tr = document.createElement('tr');
             const time = new Date(item.items[0].startTime);
             const dataDate = time.toLocaleDateString();
+            const driver = rezdyNames[item.orderNumber] ? rezdyNames[item.orderNumber].driver : '';
+            const manager = rezdyNames[item.orderNumber] ? rezdyNames[item.orderNumber].manager : '';
+
             if(dataDate != date){
               continue;
             }
@@ -226,13 +231,13 @@ function rezdy_display(){
               'product': item.items[0].productName,
               'session': `${time.getHours()}:${(('00' + time.getMinutes()).substr(-2))}`,
               'quantities': item.items[0].quantities[0].optionLabel,
-              'driverName': '',
-              'managerName': '',
+              'driverName': driver,
+              'managerName': manager,
             }
 
             for(currentTd in dataList){
               const td = document.createElement('td');
-              td.append(dataList[currentTd])
+              td.append(dataList[currentTd]);
               tr.append(td);
             }
 
@@ -242,7 +247,7 @@ function rezdy_display(){
 
         function setTodayValue(calendar){
           const currentDate = new Date().toLocaleDateString().split('.').reverse().join('-');
-          console.log(currentDate)
+          console.log(currentDate);
           calendar.value = currentDate;
           date = new Date(calendar.value).toLocaleDateString();
           return date;

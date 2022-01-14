@@ -1,5 +1,6 @@
 <?php
 add_action('init', 'rezdy_response_data');
+add_action('init', 'editDriverOrManagerName');
 
 function rezdy_response_data(){
   if(isset($_GET['rezdy_get_data'])){
@@ -26,8 +27,19 @@ function getRequestData($url, $headers, $body)
 }
 
 function editDriverOrManagerName(){
+  if(!isset($_POST['rezdy_id']) || !isset($_POST['driver_name']) || !isset($_POST['manager_name'])){
+    return;
+  }
+
   $id = $_POST['rezdy_id'];
   $driver = $_POST['driver_name'];
   $manager = $_POST['manager_name'];
-  
+  $savedList = get_option('rezdy_names');
+
+  $savedList[$id] = [
+    'driver' => $driver,
+    'manager' => $manager
+  ];
+
+  update_option('rezdy_names', $savedList);
 }
