@@ -44,6 +44,11 @@ function rezdy_display(){
           font-weight: 600;
           cursor: pointer;
       }
+
+      #rezdy_date_button:hover{
+        opacity: 0.8;
+      }
+      
       .rezdy table {
           width: 100%;
           border-collapse: collapse;

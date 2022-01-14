@@ -39,7 +39,11 @@ function rezdy_submenu_page() {
           font-weight: 600;
           cursor: pointer;
       }
-      
+
+      #rezdy_date_button:hover{
+        opacity: 0.8;
+      }
+            
       table {
         border-collapse: collapse;
       }
