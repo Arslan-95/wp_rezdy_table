@@ -9,6 +9,7 @@ function rezdy_submenu_page() {
         padding: 5px;
         background-color: rgb(238, 237, 237);
         border-radius: 2px;
+        border: 1px solid #0A64A4;
       }
 
       .rezdy {
@@ -19,6 +20,13 @@ function rezdy_submenu_page() {
         /* justify-content: center; */
         align-items: start;
         font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .rezdy__header{
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        margin-right: auto;
       }
 
       #rezdy_date_button {
@@ -114,10 +122,45 @@ function rezdy_submenu_page() {
           td:nth-of-type(3):before {
               content: "Manager";
           }
+
+          td:nth-of-type(4):before {
+              content: "Save";
+          }
+
+          td:nth-of-type(5):before {
+              content: "Delete";
+          }
+
+          .rezdy td:nth-of-type(1):before {
+              content: "Customer Full Name";
+          }
+
+          .rezdy td:nth-of-type(2):before {
+              content: "Customer Phone";
+          }
+
+          .rezdy td:nth-of-type(3):before {
+              content: "Order Number";
+          }
+          .rezdy td:nth-of-type(4):before {
+              content: "Product";
+          }
+          .rezdy td:nth-of-type(5):before {
+              content: "Session";
+          }
+          .rezdy td:nth-of-type(6):before {
+              content: "Quantities";
+          }
+          .rezdy td:nth-of-type(7):before {
+              content: "DRIVER NAME";
+          }
+          .rezdy td:nth-of-type(8):before {
+              content: "MANAGER NAME";
+          }
       }
     </style>
     <h1><?php echo get_admin_page_title(); ?></h1>
-    <form action="/" id="rezdy_names_changer">
+    <form action="" method="POST" id="rezdy_names_changer">
       <input type="text" name="rezdy_id" placeholder="rezdy id">
       <input type="text" name="driver_name" placeholder="driver name">
       <input type="text" name="manager_name" placeholder="manager name">
@@ -129,6 +172,8 @@ function rezdy_submenu_page() {
         <th>OrderNumber</th>
         <th>Driver</th>
         <th>Manager</th>
+        <th>Save</th>
+        <th>Delete</th>
       </thead>
       <tbody>
         <?php foreach($rezdyNames as $element): ?>
@@ -136,8 +181,17 @@ function rezdy_submenu_page() {
             <td><?php echo $element['orderNumber']; ?></td>
             <td><?php echo $element['driver']; ?></td>
             <td><?php echo $element['manager']; ?></td>
+            <td>
+              <button type="submit" class="edit_name">Edit</button>
+            </td>
+            <td>
+              <form action="" method="POST">
+                <input type="hidden" name="delete_rezdy_name" value="<?php echo $element['orderNumber']; ?>">
+                <button type="submit">Delete</button>
+              </form>
+            </td>
           </tr>
-        <?php endforeach ?>
+        <?php endforeach; ?>
       </tbody>
     </table>
 
@@ -146,7 +200,7 @@ function rezdy_submenu_page() {
     <button style="margin-bottom: 20px" id="load_table">Load</button>
     <span id="rezdy_loading" style="display: none;">loading...</span>
 
-    <div class="rezdy">
+    <div class="rezdy" id="rezdy" style="display: none;">
       <div class="rezdy__header">
         <span id="rezdy_date_button">Today</span>
         <form>
@@ -158,7 +212,7 @@ function rezdy_submenu_page() {
               <tr>
                   <th>Customer Full Name</th>
                   <th>Customer Phone</th>
-                  <th>Order Special Requirements</th>
+                  <th>Order Number</th>
                   <th>Product</th>
                   <th>Session</th>
                   <th>Quantities</th>
@@ -172,6 +226,23 @@ function rezdy_submenu_page() {
     </div>
 
     <script>
+      const editButtons = Array.from(document.querySelectorAll('.edit_name'));
+      const editForm = jQuery('#rezdy_names_changer');
+
+      editButtons.map(element => element.addEventListener('click', event => {
+        event.preventDefault();
+        
+        const current = jQuery(event.currentTarget);
+        orderNumber = current.parent().parent().children('td:nth-child(1)').text();
+        driver = current.parent().parent().children('td:nth-child(2)').text();
+        manager = current.parent().parent().children('td:nth-child(3)').text();
+
+        editForm.children('input[name="rezdy_id"]').val(orderNumber);
+        editForm.children('input[name="driver_name"]').val(driver);
+        editForm.children('input[name="manager_name"]').val(manager);
+
+      }));
+      
       const forms = [
         document.getElementById('rezdy_names_changer')
       ];
@@ -191,7 +262,9 @@ function rezdy_submenu_page() {
       }
 
       document.getElementById('load_table').addEventListener('click', event => {
-        document.getElementById('rezdy_loading').style.display = 'inline';
+        const loadingText = document.getElementById('rezdy_loading');
+        loadingText.style.display = 'inline';
+        event.currentTarget.style.display = 'none';
 
         const todayButton = document.getElementById('rezdy_date_button');
         const calendar = document.getElementById('rezdy_date');
@@ -209,6 +282,8 @@ function rezdy_submenu_page() {
           }).then(response => response.json())
           .then(response => {
             console.log(response.bookings);
+            loadingText.style.display = 'none';
+            document.getElementById('rezdy').style.display = 'flex';
             return response.bookings;
           });
 
@@ -247,7 +322,7 @@ function rezdy_submenu_page() {
             const dataList = {
               'fullName': item.customer.name,
               'phone': item.customer.mobile,
-              'specialRequirements': item.comments,
+              'orderNumber': item.orderNumber,
               'product': item.items[0].productName,
               'session': `${time.getHours()}:${(('00' + time.getMinutes()).substr(-2))}`,
               'quantities': item.items[0].quantities[0].optionLabel,
@@ -257,7 +332,33 @@ function rezdy_submenu_page() {
 
             for(currentTd in dataList){
               const td = document.createElement('td');
+
               td.append(dataList[currentTd]);
+
+              if(currentTd === 'orderNumber'){
+                const button = document.createElement('button');
+                button.innerHTML = 'Edit Names';
+                button.style.marginLeft = '5px';
+
+                button.addEventListener('click', event => {
+                  event.preventDefault();
+
+                  const current = jQuery(event.currentTarget);
+                  
+                  const orderNumber = current.parent().text().replace('Edit Names', ''),
+                  driver = current.parent().parent().children('td:nth-child(7)').text(),
+                  manager = current.parent().parent().children('td:nth-child(8)').text()
+
+                  editForm.children('input[name="rezdy_id"]').val(orderNumber);
+                  editForm.children('input[name="driver_name"]').val(driver);
+                  editForm.children('input[name="manager_name"]').val(manager);                  
+
+                  window.scrollTo(0, 0);
+                });
+                
+                td.append(button);
+              }
+
               tr.append(td);
             }
 

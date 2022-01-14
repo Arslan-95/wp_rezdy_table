@@ -27,20 +27,30 @@ function getRequestData($url, $headers, $body)
 }
 
 function editDriverOrManagerName(){
-  if(!isset($_POST['rezdy_id']) || !isset($_POST['driver_name']) || !isset($_POST['manager_name'])){
+  if(!isset($_POST['rezdy_id']) && !isset($_POST['driver_name']) && !isset($_POST['manager_name']) && !isset($_POST['delete_rezdy_name'])){
     return;
   }
 
-  $id = $_POST['rezdy_id'];
-  $driver = $_POST['driver_name'];
-  $manager = $_POST['manager_name'];
   $savedList = get_option('rezdy_names');
+  
+  if(isset($_POST['rezdy_id']) && isset($_POST['driver_name']) && isset($_POST['manager_name'])){
+    $id = $_POST['rezdy_id'];
+    $driver = $_POST['driver_name'];
+    $manager = $_POST['manager_name'];
 
-  $savedList[$id] = [
-    'orderNumber' => $id,
-    'driver' => $driver,
-    'manager' => $manager
-  ];
+    $savedList[$id] = [
+      'orderNumber' => $id,
+      'driver' => $driver,
+      'manager' => $manager
+    ];
 
-  update_option('rezdy_names', $savedList);
+    update_option('rezdy_names', $savedList);
+  }
+  
+  if(isset($_POST['delete_rezdy_name'])){
+    $name = $_POST['delete_rezdy_name'];
+    unset($savedList[$name]);
+
+    return update_option('rezdy_names', $savedList);
+  }
 }
