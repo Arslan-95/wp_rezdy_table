@@ -48,7 +48,6 @@ function rezdy_display(){
           width: 100%;
           border-collapse: collapse;
       }
-
       
       .rezdy tr:nth-of-type(odd) {
           background: #eee;
@@ -147,29 +146,34 @@ function rezdy_display(){
           }
       }
     </style>
-      <div class="rezdy">
-        <div class="rezdy__header">
-          <span id="rezdy_date_button">Today</span>
-          <form>
-              <input type="date" id="rezdy_date" name="rezdy_date" value="">
-          </form>
-        </div>
-        <table class="rezdy-table">
-            <thead class="rezdy-table__header">
-                <tr>
-                    <th>Customer Full Name</th>
-                    <th>Customer Phone</th>
-                    <th>Order Special Requirements</th>
-                    <th>Product</th>
-                    <th>Session</th>
-                    <th>Quantities</th>
-                    <th>DRIVER NAME</th>
-                    <th>MANAGER NAME</th>
-                </tr>
-            </thead>
-            <tbody class="rezdy-table__body">
-            </tbody>
-        </table>
+    <div class="rezdy">
+      <div class="rezdy__header">
+        <span id="rezdy_date_button">Today</span>
+        <form>
+            <input type="date" id="rezdy_date" name="rezdy_date" value="">
+        </form>
+      </div>
+      <table class="rezdy-table">
+          <thead class="rezdy-table__header">
+              <tr>
+                  <th>Customer Full Name</th>
+                  <th>Customer Phone</th>
+                  <th>Order Special Requirements</th>
+                  <th>Product</th>
+                  <th>Session</th>
+                  <th>Quantities</th>
+                  <th>DRIVER NAME</th>
+                  <th>MANAGER NAME</th>
+              </tr>
+          </thead>
+          <tbody class="rezdy-table__body">
+            <tr>
+              <td>
+                <span id="rezdy_loading">Loading</span>
+              </td>
+            </tr>
+          </tbody>
+      </table>
     </div>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
@@ -177,6 +181,20 @@ function rezdy_display(){
         const calendar = document.getElementById('rezdy_date');
         const rezdyNames = <?php echo $rezdyNames; ?>;
 
+        const loadingElement = document.getElementById('rezdy_loading');
+        const loadingAnimation = setInterval(() => { // Create Animation Interval
+          loadingElement.innerHTML = 'Loading';
+          setTimeout(() => {
+            loadingElement.innerHTML = 'Loading.';
+          }, 250);
+          setTimeout(() => {
+            loadingElement.innerHTML = 'Loading..';
+          }, 500);
+          setTimeout(() => {
+            loadingElement.innerHTML = 'Loading...'
+          }, 750);
+        }, 1000);
+        
         console.log('start...');
         
         setTodayValue(calendar);
@@ -189,6 +207,7 @@ function rezdy_display(){
           }).then(response => response.json())
           .then(response => {
             console.log(response.bookings);
+            clearTimeout(loadingAnimation); // Clear Animation Interval
             return response.bookings;
           });
 

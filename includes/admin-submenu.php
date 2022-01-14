@@ -247,7 +247,7 @@ function rezdy_submenu_page() {
         document.getElementById('rezdy_names_changer')
       ];
       
-      forms.map(element => element.addEventListener('submit', event => formListener(event)));
+      // forms.map(element => element.addEventListener('submit', event => formListener(event)));
 
       function formListener(event){
         event.preventDefault();
@@ -337,7 +337,7 @@ function rezdy_submenu_page() {
 
               if(currentTd === 'orderNumber'){
                 const button = document.createElement('button');
-                button.innerHTML = 'Edit Names';
+                button.innerHTML = 'Copy';
                 button.style.marginLeft = '5px';
 
                 button.addEventListener('click', event => {
@@ -345,7 +345,7 @@ function rezdy_submenu_page() {
 
                   const current = jQuery(event.currentTarget);
                   
-                  const orderNumber = current.parent().text().replace('Edit Names', ''),
+                  const orderNumber = current.parent().text().replace('Copy', ''),
                   driver = current.parent().parent().children('td:nth-child(7)').text(),
                   manager = current.parent().parent().children('td:nth-child(8)').text()
 
@@ -353,7 +353,11 @@ function rezdy_submenu_page() {
                   editForm.children('input[name="driver_name"]').val(driver);
                   editForm.children('input[name="manager_name"]').val(manager);                  
 
-                  window.scrollTo(0, 0);
+                  window.scroll({
+                    top: 0, 
+                    left: 0, 
+                    behavior: 'smooth' 
+                  });
                 });
                 
                 td.append(button);

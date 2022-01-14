@@ -9,7 +9,7 @@ function register_my_custom_submenu_page() {
 		'rezdy_agent_page',
 		'Rezdy Edit Billings',
 		'Edit Billings',
-		'manage_options',
+		'edit_others_posts',
 		'rezdy_submenu_page',
 		'rezdy_submenu_page'
 	);
